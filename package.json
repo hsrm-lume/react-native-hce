@@ -1,5 +1,5 @@
 {
-  "name": "react-native-hce",
+  "name": "@hsrm-lume/react-native-hce",
   "version": "0.1.2",
   "description": "Emulate smart cards inside React-Native application.",
   "main": "lib/commonjs/index",
@@ -36,13 +36,13 @@
     "nfc",
     "hce"
   ],
-  "repository": "https://github.com/appidea/react-native-hce",
+  "repository": "https://github.com/hsrm-lume/react-native-hce",
   "author": "Mateusz Falkowski <mateusz@appidea.pl> (http://www.appidea.pl)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/appidea/react-native-hce/issues"
+    "url": "https://github.com/hsrm-lume/react-native-hce/issues"
   },
-  "homepage": "https://github.com/appidea/react-native-hce#readme",
+  "homepage": "https://github.com/hsrm-lume/react-native-hce#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
     "@react-native-community/bob": "^0.16.2",

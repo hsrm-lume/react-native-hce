@@ -3,6 +3,8 @@ import type HCEApplication from "../HCEApplication";
 export enum NFCContentType {
   Text = 'text',
   URL = 'url',
+  APP = 'app',
+  JSON = 'json',
 }
 
 class NFCTagType4 implements HCEApplication {

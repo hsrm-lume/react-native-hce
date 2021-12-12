@@ -19,6 +19,10 @@ public class NdefEntity {
       record = createTextRecord("en", content);
     } else if (type.equals("url")) {
       record = createUrlRecord(content);
+    } else if (type.equals("json")) {
+      record = createJsonRecord(content);
+    } else if (type.equals("app")) {
+      record = createAppRecord(content);
     } else {
       throw new IllegalArgumentException("Wrong NFC tag content type");
     }
@@ -74,5 +78,13 @@ public class NdefEntity {
     Log.i(TAG, BinaryUtils.ByteArrayToHexString(recordPayload));
 
     return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_URI, null, recordPayload);
+  }
+
+  public static NdefRecord createJsonRecord(String text) {
+    return new NdefRecord();
+  }
+
+  public static NdefRecord createAppRecord(String text) {
+    return new NdefRecord();
   }
 }
