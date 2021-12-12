@@ -8,7 +8,7 @@ class HCESession {
   /**
    * Initializes and controls the session of HCE session.
    */
-  constructor(application: HCEApplication) {
+  constructor() {
     this.active = false;
   }
 
