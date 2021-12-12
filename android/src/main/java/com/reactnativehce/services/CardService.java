@@ -49,10 +49,9 @@ public class CardService extends HostApduService {
       SharedPreferences prefs = getApplicationContext()
         .getSharedPreferences("hce", Context.MODE_PRIVATE);
 
-      String type = prefs.getString("type", "text");
-      String content = prefs.getString("content", "No text provided");
-
-      registeredHCEApplications.add(new NFCTagType4(type, content));
+      prefs.getAll().forEach((k,v) -> {
+        registeredHCEApplications.add(new NFCTagType4(k, v));
+      });
     }
 
     @Override

@@ -7,10 +7,8 @@ const { Hce } = NativeModules;
 class HCESession {
   /**
    * Initializes and controls the session of HCE session.
-   * @param application HCE application to initialize.
    */
   constructor(application: HCEApplication) {
-    this.application = application;
     this.active = false;
   }
 
@@ -23,6 +21,21 @@ class HCESession {
   };
 
   /**
+   * Adds a Tag to a HCESession
+   */
+  addTag = async (application: HCEApplication) => {
+    if (application instanceof NFCTagType4) {
+      await Hce.setContent(
+        this.application.content.contentType,
+        this.application.content.content
+      );
+
+      return this;
+    }
+    throw new Error('Unrecognized app type.');
+  }
+
+  /**
    * Starts the HCE session.
    */
   start = async () => {
@@ -30,19 +43,10 @@ class HCESession {
       throw new Error('react-native-hce does not support this platform');
     }
 
-    if (this.application instanceof NFCTagType4) {
-      await Hce.setContent(
-        this.application.content.contentType,
-        this.application.content.content
-      );
+    await Hce.setEnabled(true);
+    this.active = true;
 
-      await Hce.setEnabled(true);
-      this.active = true;
-
-      return this;
-    }
-
-    throw new Error('Unrecognized app type.');
+    return this;
   };
 
   application: any;

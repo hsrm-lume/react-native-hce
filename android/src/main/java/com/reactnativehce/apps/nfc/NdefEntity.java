@@ -81,10 +81,20 @@ public class NdefEntity {
   }
 
   public static NdefRecord createJsonRecord(String text) {
-    return new NdefRecord();
+    byte[] textBytes;
+
+    textBytes = text.getBytes(Charset.forName("UTF-8"));
+
+    byte[] recordPayload = new byte[1 + textBytes.length];
+
+    System.arraycopy(textBytes,0, recordPayload,1, textBytes.length);
+
+    Log.i(TAG, BinaryUtils.ByteArrayToHexString(recordPayload));
+
+    return new NdefRecord.createMime("application/json", textBytes);
   }
 
   public static NdefRecord createAppRecord(String text) {
-    return new NdefRecord();
+    return new NdefRecord.createApplicationRecord(text);
   }
 }

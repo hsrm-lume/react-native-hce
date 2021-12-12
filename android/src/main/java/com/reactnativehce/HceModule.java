@@ -32,8 +32,7 @@ public class HceModule extends ReactContextBaseJavaModule {
     SharedPreferences.Editor editor = reactContext.getApplicationContext().getSharedPreferences("hce", Context.MODE_PRIVATE)
       .edit();
 
-    editor.putString("type", type);
-    editor.putString("content", content);
+    editor.putString(type, content);
 
     editor.apply();
 
