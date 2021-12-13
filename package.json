@@ -1,6 +1,6 @@
 {
   "name": "@hsrm-lume/react-native-hce",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Emulate smart cards inside React-Native application.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -75,32 +75,16 @@
       "<rootDir>/lib/"
     ]
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "yarn lint && yarn typescript"
-    }
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",
       "tagName": "v${version}"
     },
     "npm": {
-      "publish": true
+      "publish": false
     },
     "github": {
       "release": true
-    },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
     }
   },
   "eslintConfig": {

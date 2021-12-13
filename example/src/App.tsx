@@ -23,8 +23,10 @@ export default function App() {
   }, [setSimulationEnabled, simulationInstance]);
 
   const startSimulation = useCallback(async () => {
+    const session = await new HCESession();
     const tag = new NFCTagType4(contentType, content);
-    simulationInstance.current = await new HCESession(tag).start();
+    session.addTag(tag);
+    simulationInstance.current = await session.start();
     setSimulationEnabled(simulationInstance.current.active);
   }, [setSimulationEnabled, simulationInstance, content, contentType]);
 
