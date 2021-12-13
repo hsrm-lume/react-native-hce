@@ -1,5 +1,7 @@
 package com.reactnativehce.apps.nfc;
 
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.os.Build;
 import android.util.Log;
 import androidx.annotation.RequiresApi;
@@ -34,24 +36,15 @@ public class NFCTagType4 implements IHCEApplication {
   public NFCTagType4(Map<String,?> entities) {
     // add all NdefEntities
     entities.forEach((k,v) -> this.ndefEntities.add(new NdefEntity(k,(String) v)));
-    // collect data in byteArray
-    byteArray = this.ndefEntities.stream()
-      .map(x -> x.record.toByteArray())
-      .reduce(new byte[]{}, NFCTagType4::concatenate);
+    // collect data
+    NdefRecord[] l = this.ndefEntities.stream().map(x -> x.record).toArray(NdefRecord[]::new);
+    NdefMessage m = new NdefMessage(l);
+    byteArray = m.toByteArray();
     // calc size of byteArray and store in lengthArray
     lengthArray = fillByteArrayToFixedDimension(
       BigInteger.valueOf(byteArray.length).toByteArray(),
       2
     );
-  }
-
-  private static byte[] concatenate(byte[] a, byte[] b) {
-    int aLen = a.length;
-    int bLen = b.length;
-    byte[] c = (byte[]) Array.newInstance(a.getClass().getComponentType(), aLen+bLen);
-    System.arraycopy(a, 0, c, 0, aLen);
-    System.arraycopy(b, 0, c, aLen, bLen);
-    return c;
   }
 
   public boolean assertSelectCommand(byte[] command) {
