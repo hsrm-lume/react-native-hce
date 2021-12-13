@@ -1,11 +1,16 @@
 package com.reactnativehce.apps.nfc;
 
+import android.os.Build;
 import android.util.Log;
-
+import androidx.annotation.RequiresApi;
 import com.reactnativehce.utils.BinaryUtils;
 import com.reactnativehce.IHCEApplication;
-
+import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class NFCTagType4 implements IHCEApplication {
   private static final String TAG = "NFCTag";
@@ -19,17 +24,51 @@ public class NFCTagType4 implements IHCEApplication {
   private static final byte[] CMD_OK = BinaryUtils.HexStringToByteArray("9000");
   private static final byte[] CMD_ERROR = BinaryUtils.HexStringToByteArray("6A82");
 
-  private NdefEntity ndefEntity;
-
-  public NFCTagType4(String type, String content) {
-    ndefEntity = new NdefEntity(type, content);
-  }
+  private final List<NdefEntity> ndefEntities = new ArrayList<>();
+  public byte[] byteArray;
+  public byte[] lengthArray;
 
   private boolean READ_CAPABILITY_CONTAINER_CHECK = false;
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public NFCTagType4(Map<String,?> entities) {
+    // add all NdefEntities
+    entities.forEach((k,v) -> this.ndefEntities.add(new NdefEntity(k,(String) v)));
+    // collect data in byteArray
+    byteArray = this.ndefEntities.stream()
+      .map(x -> x.record.toByteArray())
+      .reduce(new byte[]{}, NFCTagType4::concatenate);
+    // calc size of byteArray and store in lengthArray
+    lengthArray = fillByteArrayToFixedDimension(
+      BigInteger.valueOf(byteArray.length).toByteArray(),
+      2
+    );
+  }
+
+  private static byte[] concatenate(byte[] a, byte[] b) {
+    int aLen = a.length;
+    int bLen = b.length;
+    byte[] c = (byte[]) Array.newInstance(a.getClass().getComponentType(), aLen+bLen);
+    System.arraycopy(a, 0, c, 0, aLen);
+    System.arraycopy(b, 0, c, aLen, bLen);
+    return c;
+  }
 
   public boolean assertSelectCommand(byte[] command) {
     byte[] selectCommand = BinaryUtils.HexStringToByteArray("00A4040007D276000085010100");
     return Arrays.equals(command, selectCommand);
+  }
+
+  private static byte[] fillByteArrayToFixedDimension(byte[] array, int fixedSize) {
+    if (array.length == fixedSize) {
+      return array;
+    }
+
+    byte[] start = BinaryUtils.HexStringToByteArray("00");
+    byte[] filledArray = new byte[start.length + array.length];
+    System.arraycopy(start, 0, filledArray, 0, start.length);
+    System.arraycopy(array, 0, filledArray, start.length, array.length);
+    return fillByteArrayToFixedDimension(filledArray, fixedSize);
   }
 
   public byte[] processCommand(byte[] command) {
@@ -52,27 +91,29 @@ public class NFCTagType4 implements IHCEApplication {
     if (Arrays.equals(CMD_NDEF_READ_BINARY_NLEN, command)) {
       Log.i(TAG, "Requesting CMD_NDEF_READ_BINARY_NLEN");
 
-      byte[] response = new byte[ndefEntity.lengthArray.length + CMD_OK.length];
-      System.arraycopy(ndefEntity.lengthArray, 0, response, 0, ndefEntity.lengthArray.length);
-      System.arraycopy(CMD_OK, 0, response, ndefEntity.lengthArray.length, CMD_OK.length);
+
+
+      byte[] response = new byte[lengthArray.length + CMD_OK.length];
+      System.arraycopy(lengthArray, 0, response, 0, lengthArray.length);
+      System.arraycopy(CMD_OK, 0, response, lengthArray.length, CMD_OK.length);
 
       READ_CAPABILITY_CONTAINER_CHECK = false;
       return response;
     }
 
-    if (Arrays.equals(Arrays.copyOfRange(command, 0, 2), CMD_NDEF_READ_BINARY)) {
+    if (Arrays.equals(CMD_NDEF_READ_BINARY, Arrays.copyOfRange(command, 0, 2))) {
       Log.i(TAG, "Requesting NDEF Content");
 
       int offset = Integer.parseInt(BinaryUtils.ByteArrayToHexString(Arrays.copyOfRange(command, 2, 4)), 16);
       int length = Integer.parseInt(BinaryUtils.ByteArrayToHexString(Arrays.copyOfRange(command, 4, 5)), 16);
 
-      byte[] fullResponse = new byte[ndefEntity.lengthArray.length + ndefEntity.byteArray.length];
-      System.arraycopy(ndefEntity.lengthArray, 0, fullResponse, 0, ndefEntity.lengthArray.length);
-      System.arraycopy(ndefEntity.byteArray,0, fullResponse, ndefEntity.lengthArray.length, ndefEntity.byteArray.length);
+      byte[] fullResponse = new byte[lengthArray.length + byteArray.length];
+      System.arraycopy(lengthArray, 0, fullResponse, 0, lengthArray.length);
+      System.arraycopy(byteArray,0, fullResponse, lengthArray.length, byteArray.length);
 
       byte[] slicedResponse = Arrays.copyOfRange(fullResponse, offset, fullResponse.length);
 
-      int realLength = (slicedResponse.length <= length) ? slicedResponse.length : length;
+      int realLength = Math.min(slicedResponse.length, length);
       byte[] response = new byte[realLength + CMD_OK.length];
 
       System.arraycopy(slicedResponse, 0, response, 0, realLength);
