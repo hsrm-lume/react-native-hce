@@ -41,6 +41,12 @@ public class HceModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setEnabled(Boolean enabled, Promise promise) {
+    if(!enabled) {
+      SharedPreferences.Editor editor = reactContext.getApplicationContext().getSharedPreferences("hce", Context.MODE_PRIVATE)
+        .edit();
+      editor.clear();
+      editor.apply();
+    }
     reactContext.getApplicationContext().getPackageManager()
       .setComponentEnabledSetting(
         new ComponentName(reactContext.getApplicationContext(), CardService.class),
