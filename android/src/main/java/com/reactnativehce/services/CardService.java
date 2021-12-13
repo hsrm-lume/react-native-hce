@@ -50,7 +50,7 @@ public class CardService extends HostApduService {
         .getSharedPreferences("hce", Context.MODE_PRIVATE);
 
       prefs.getAll().forEach((k,v) -> {
-        registeredHCEApplications.add(new NFCTagType4(k, v));
+        registeredHCEApplications.add(new NFCTagType4(k, (String) v));
       });
     }
 

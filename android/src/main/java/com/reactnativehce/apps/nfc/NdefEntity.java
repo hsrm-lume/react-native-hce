@@ -91,10 +91,10 @@ public class NdefEntity {
 
     Log.i(TAG, BinaryUtils.ByteArrayToHexString(recordPayload));
 
-    return new NdefRecord.createMime("application/json", textBytes);
+    return NdefRecord.createMime("application/json", textBytes);
   }
 
   public static NdefRecord createAppRecord(String text) {
-    return new NdefRecord.createApplicationRecord(text);
+    return NdefRecord.createApplicationRecord(text);
   }
 }
