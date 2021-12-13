@@ -26,8 +26,8 @@ class HCESession {
   addTag = async (application: HCEApplication) => {
     if (application instanceof NFCTagType4) {
       await Hce.setContent(
-        this.application.content.contentType,
-        this.application.content.content
+        application.content.contentType,
+        application.content.content
       );
 
       return this;
