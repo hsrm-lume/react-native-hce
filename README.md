@@ -1,4 +1,10 @@
-# react-native-hce
+# Forked: react-native-hce
+
+___
+### Changes in this Fork:
+- Support for two more tag-types (`"json"` & `"app"`)
+- Support for passing multiple entities to the same emulated host card
+___
 
 **Host Card Emulation** is the technology in Android Devices, that let the device act as a host in the NFC communication. This technology can be used, e.g. to simulate the passive smart cards or NFC tags.
 This package allows the ``react-native`` application to use the adventages of this technology.
@@ -17,13 +23,13 @@ anyways, the module's architecture is ready to engage also the other usages.
 ## Installation
 
 ```sh
-npm install react-native-hce --save
+npm install https://github.com/hsrm-lume/react-native-hce.git --save
 ```
 
 or
 
 ```sh
-yarn add react-native-hce
+yarn add https://github.com/hsrm-lume/react-native-hce.git
 ```
 
 ...up to Your preferences and project configuration.
@@ -118,13 +124,18 @@ Inspired by [underwindfall's](https://github.com/underwindfall) NFC Type 4 tag c
 This is how to enable the NFC Tag emulation:
 
 ```js
-import HCESession, { NFCContentType, NFCTagType4 } from 'react-native-hce';
+import HCESession, { NFCContentType, NFCTagType4 } from '@hsrm-lume/react-native-hce';
 
 let simulation;
 
 const startSimulation = async () => {
-    const tag = new NFCTagType4(NFCContentType.Text, "Hello world");
-    simulation = await (new HCESession(tag)).start();
+    const tag1 = new NFCTagType4(NFCContentType.Text, 'Hello world');
+    const tag2 = new NFCTagType4(NFCContentType.APP,  'com.myapp'  );
+    
+    simulation = new HCESession();
+    await simulation.addTag(tag1);
+    await simulation.addTag(tag2);
+    await simulation.start();
 }
 
 startSimulation();
