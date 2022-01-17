@@ -42,7 +42,6 @@ public class NdefEntity {
   public static NdefRecord createJsonRecord(String text) {
     return NdefRecord.createMime(
       "application/json",
-      language.getBytes(StandardCharsets.US_ASCII),
       text.getBytes(StandardCharsets.UTF_8)
     );
   }
